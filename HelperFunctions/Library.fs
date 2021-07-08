@@ -2,10 +2,6 @@
 
 open FSharp.Stats
 open FSharp.Stats.Distributions
-open System.Threading.Tasks
-
-module Message =
-    let mutable message = "Hello World"
 
 type Random2DSample (mu: float, std: float, size: int) =
     // normal distributions with differing standard deviations
@@ -35,12 +31,6 @@ module SampleDistribution2D =
     let LinSpace (arr, size:float) = 
         let AxisSize = size - 1.0
         [(arr |> Array.min) .. (Step arr AxisSize) .. (arr |> Array.max)]
-
-    let print arr = 
-        printfn "%A" arr
-
-    let numberOfPoints =
-        seq0 |> Array.length
 
     let FindGridNodes (axisSeq: List<float>, point:float) =
         let mutable pivot = axisSeq.Length / 2
