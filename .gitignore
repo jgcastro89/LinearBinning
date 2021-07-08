@@ -3,3 +3,6 @@
 ################################################################################
 
 /HelperFunctions/bin/Debug/net5.0
+/HelperFunctions/obj
+/KernelDensityEstimation/bin/Debug/net5.0
+/KernelDensityEstimation/obj
