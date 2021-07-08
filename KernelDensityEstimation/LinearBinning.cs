@@ -60,7 +60,7 @@ namespace KernelDensityEstimation
         }
 
         private List<CoordinatePoint> Points { get; set; }
-        public double[,] Grid2D { get; set; }
+        private double[,] Grid2D { get; set; }
         private FSharpList<double> XAxisSeq { get; set; }
         private FSharpList<double> YAxisSeq { get; set; }
     }
