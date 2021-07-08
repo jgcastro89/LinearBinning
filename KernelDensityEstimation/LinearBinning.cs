@@ -5,15 +5,15 @@ using System.Threading.Tasks;
 
 namespace KernelDensityEstimation
 {
-    class KDE
+    class LinearBinning
     {
         static void Main(string[] args)
         {
-            KDE kde = new();
+            LinearBinning kde = new();
 
             kde.CreatePointsSetFromSequences();
             kde.GenerateGridFromSampleData();
-            kde.LinearBinning();
+            kde.InitiateDataBinning();
         }
 
         public void GenerateGridFromSampleData()
@@ -24,7 +24,7 @@ namespace KernelDensityEstimation
             YAxisSeq = _.YAxis;
         }
 
-        public void LinearBinning()
+        public void InitiateDataBinning()
         {
             var watch = new System.Diagnostics.Stopwatch();
             watch.Start();
