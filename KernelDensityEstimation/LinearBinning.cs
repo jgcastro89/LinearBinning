@@ -5,53 +5,54 @@ using System.Threading.Tasks;
 
 namespace KernelDensityEstimation
 {
-    class LinearBinning
+    internal class LinearBinning
     {
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
             LinearBinning kde = new();
 
+            SampleDistribution2D.GenerateSampleData(20000);
             kde.CreatePointsSetFromSequences();
             kde.GenerateGridFromSampleData();
             kde.InitiateDataBinning();
         }
 
-        public void GenerateGridFromSampleData()
+        private void GenerateGridFromSampleData()
         {
-            Grid _ = new(SampleDistribution2D.seq0, SampleDistribution2D.seq1, 100);
-            Grid2D = _.Grid2D;
-            XAxisSeq = _.XAxis;
-            YAxisSeq = _.YAxis;
+            Grid g = new(SampleDistribution2D.seq0, SampleDistribution2D.seq1, 100);
+            Grid2D = g.Grid2D;
+            XAxisSeq = g.XAxis;
+            YAxisSeq = g.YAxis;
         }
 
-        public void InitiateDataBinning()
+        private void InitiateDataBinning()
         {
             var watch = new System.Diagnostics.Stopwatch();
             watch.Start();
 
             Parallel.ForEach(Points, point =>
             {
-                int[] xNodes = SampleDistribution2D.FindGridNodes(XAxisSeq, point.X);
-                int XLowerBoundGridIndex = xNodes[0];
-                int XUpperBoundGridIndex = xNodes[1];
+                int[] xNodes = SampleDistribution2D.FindNearestGridNodes(XAxisSeq, point.X);
+                int xLowerBoundGridIndex = xNodes[0];
+                int xUpperBoundGridIndex = xNodes[1];
 
-                int[] yNodes = SampleDistribution2D.FindGridNodes(YAxisSeq, point.Y);
-                int YLowerBoundGridIndex = yNodes[0];
-                int YUpperBoundGridIndex = yNodes[1];
+                int[] yNodes = SampleDistribution2D.FindNearestGridNodes(YAxisSeq, point.Y);
+                int yLowerBoundGridIndex = yNodes[0];
+                int yUpperBoundGridIndex = yNodes[1];
 
                 lock (Grid2D)
                 {
-                    Grid2D[XLowerBoundGridIndex, YUpperBoundGridIndex] += 1;
-                    Grid2D[XLowerBoundGridIndex, YLowerBoundGridIndex] += 1;
-                    Grid2D[XUpperBoundGridIndex, YLowerBoundGridIndex] += 1;
-                    Grid2D[XUpperBoundGridIndex, YUpperBoundGridIndex] += 1;
+                    Grid2D[xLowerBoundGridIndex, yUpperBoundGridIndex] += 1;
+                    Grid2D[xLowerBoundGridIndex, yLowerBoundGridIndex] += 1;
+                    Grid2D[xUpperBoundGridIndex, yLowerBoundGridIndex] += 1;
+                    Grid2D[xUpperBoundGridIndex, yUpperBoundGridIndex] += 1;
                 }
             });
             watch.Stop();
             System.Console.WriteLine($"Execution Time: {watch.ElapsedMilliseconds} ms");
         }
 
-        public void CreatePointsSetFromSequences()
+        private void CreatePointsSetFromSequences()
         {
             Points = new List<CoordinatePoint>();
 

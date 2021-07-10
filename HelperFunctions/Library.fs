@@ -21,18 +21,22 @@ module SampleDistribution2D =
     let mutable seed = 1
     Random.SetSampleGenerator(Random.RandThreadSafe(seed))
 
-    let private random2DSample = new Random2DSample(0.0, 1.0, 20000000)
-    let seq0 = Array.map2 (+) random2DSample.sample0 random2DSample.sample1
-    let seq1 = Array.map2 (-) random2DSample.sample0 random2DSample.sample1
+    let mutable seq0 = [||]
+    let mutable seq1 = [||]
 
-    let Step arr size:float = 
+    let GenerateSampleData sampleSize =
+        let random2DSample = new Random2DSample(0.0, 1.0, sampleSize)
+        seq0 <- Array.map2 (+) random2DSample.sample0 random2DSample.sample1
+        seq1 <- Array.map2 (-) random2DSample.sample0 random2DSample.sample1
+
+    let Step (arr, size:float) = 
         ((arr |> Array.max) - (arr |> Array.min)) / size
 
     let LinSpace (arr, size:float) = 
-        let AxisSize = size - 1.0
-        [(arr |> Array.min) .. (Step arr AxisSize) .. (arr |> Array.max)]
+        let axisLegnth = size - 1.0
+        [(arr |> Array.min) .. ((arr, axisLegnth) |> Step) .. (arr |> Array.max)]
 
-    let FindGridNodes (axisSeq: List<float>, point:float) =
+    let FindNearestGridNodes (axisSeq: List<float>, point:float) =
         let mutable pivot = axisSeq.Length / 2
         let mutable upperBound = axisSeq.Length
         let mutable lowerBound = 0
@@ -43,7 +47,7 @@ module SampleDistribution2D =
                 pivot <- (pivot - (pivot - lowerBound) /2)
             elif point >= axisSeq.[pivot] then
                 lowerBound <- pivot
-                pivot <- (pivot + (upperBound - pivot) / 2)
+                pivot <- (pivot + (upperBound - pivot) / 2) 
 
         [|lowerBound; upperBound|]
 
