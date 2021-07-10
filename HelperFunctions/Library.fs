@@ -13,21 +13,17 @@ type Random2DSample (mu: float, std: float, size: int) =
 
 type CoordinatePoint (x: float, y:float) =
     struct
-        member _.X = x
-        member _.Y = y
+        member this.X = x
+        member this.Y = y
     end
 
 module SampleDistribution2D = 
     let mutable seed = 1
+    let mutable Seq0 = [||]
+    let mutable Seq1 = [||]
+    let mutable Points = [||]
+
     Random.SetSampleGenerator(Random.RandThreadSafe(seed))
-
-    let mutable seq0 = [||]
-    let mutable seq1 = [||]
-
-    let GenerateSampleData sampleSize =
-        let random2DSample = new Random2DSample(0.0, 1.0, sampleSize)
-        seq0 <- Array.map2 (+) random2DSample.sample0 random2DSample.sample1
-        seq1 <- Array.map2 (-) random2DSample.sample0 random2DSample.sample1
 
     let Step (arr, size:float) = 
         ((arr |> Array.max) - (arr |> Array.min)) / size
@@ -35,6 +31,12 @@ module SampleDistribution2D =
     let LinSpace (arr, size:float) = 
         let axisLegnth = size - 1.0
         [(arr |> Array.min) .. ((arr, axisLegnth) |> Step) .. (arr |> Array.max)]
+
+    let GenerateSampleData sampleSize =
+        let random2DSample = new Random2DSample(0.0, 1.0, sampleSize)
+        Seq0 <- Array.map2 (+) random2DSample.sample0 random2DSample.sample1
+        Seq1 <- Array.map2 (-) random2DSample.sample0 random2DSample.sample1
+        Seq0, Seq1
 
     let FindNearestGridNodes (axisSeq: List<float>, point:float) =
         let mutable pivot = axisSeq.Length / 2
@@ -49,13 +51,19 @@ module SampleDistribution2D =
                 lowerBound <- pivot
                 pivot <- (pivot + (upperBound - pivot) / 2) 
 
-        [|lowerBound; upperBound|]
+        lowerBound, upperBound
 
-type Grid (arr0, arr1, size) =
-    let GridSize = size-1.0
+    let CreatePointSetFromSampleData (seq0: array<float>, seq1: array<float>) = 
+        let listSize = seq0 |> Array.length
+        Points <- Array.init<CoordinatePoint> listSize (fun i -> new CoordinatePoint(seq0.[i], seq1.[i]))
 
-    member this.YAxis = (arr1, GridSize) |> SampleDistribution2D.LinSpace
-    member this.XAxis = (arr0, GridSize) |> SampleDistribution2D.LinSpace
+    let Create2DGrid (arr0, arr1, size) = 
+        let GridSize = size-1.0
+        
+        let YAxis = (arr1, GridSize) |> LinSpace
+        let XAxis = (arr0, GridSize) |> LinSpace
+        
+        let GridMap2D = Array2D.init (XAxis.Length + 1) (YAxis.Length + 1) (fun x y -> 0.0)
 
-    member this.Grid2D = 
-        Array2D.init (this.XAxis.Length + 1) (this.YAxis.Length + 1) (fun x y -> 0.0)
+        XAxis, YAxis, GridMap2D
+
