@@ -1,15 +1,8 @@
 ﻿namespace HelperFunctions
 
 open FSharp.Stats
-open FSharp.Stats.Distributions
-
-type Random2DSample (mu: float, std: float, size: int) =
-    // normal distributions with differing standard deviations
-    let normal_0 = Continuous.normal mu std
-    let normal_1 = Continuous.normal mu (std/2.)
-
-    member this.sample0 = Array.init size (fun _ -> normal_0.Sample())
-    member this.sample1 = Array.init size (fun _ -> normal_1.Sample())
+open Plotly.NET
+open MxNet
 
 type CoordinatePoint (x: float, y:float) =
     struct
@@ -18,7 +11,7 @@ type CoordinatePoint (x: float, y:float) =
     end
 
 module SampleDistribution2D = 
-    let mutable seed = 1
+    let mutable seed = 10
     let mutable Seq0 = [||]
     let mutable Seq1 = [||]
     let mutable Points = [||]
@@ -32,11 +25,48 @@ module SampleDistribution2D =
         let axisLegnth = size - 1.0
         [(arr |> Array.min) .. ((arr, axisLegnth) |> Step) .. (arr |> Array.max)]
 
-    let GenerateSampleData sampleSize =
-        let random2DSample = new Random2DSample(0.0, 1.0, sampleSize)
-        Seq0 <- Array.map2 (+) random2DSample.sample0 random2DSample.sample1
-        Seq1 <- Array.map2 (-) random2DSample.sample0 random2DSample.sample1
+    let Chart2D (xData: seq<float>, yData: seq<float>) =
+        Chart.Point(xData, yData)
+        |> Chart.withTitle "Kernel Density Estimate"
+        |> Chart.withSize(width=2600., height=1400.)
+        |> Chart.Show
+
+    let Chart3D (grid: float[,], xAxis: List<float>, yAxis: List<float>) =
+        let gridAxisLegnth = int (sqrt(float grid.Length)) - 1
+        let data = seq {for i in 0 .. gridAxisLegnth do 
+                        seq { for j in 0 .. gridAxisLegnth 
+                            do yield grid.[i, j]} }
+
+        Chart.Heatmap(data, xAxis, yAxis)
+        |> Chart.withTitle "Kernel Density Estimate"
+        |> Chart.withSize(width=2600., height=1400.)
+        |> Chart.Show
+
+    let ChartContour (grid: float[,]) =
+        let gridAxisLegnth = int (sqrt(float grid.Length)) - 1
+        let data = seq {for i in 0 .. gridAxisLegnth do 
+                        seq { for j in 0 .. gridAxisLegnth 
+                            do yield grid.[i, j]} }
+        data 
+        |> Chart.Contour
+        |> Chart.withSize(2600., 1400.)
+        |> Chart.Show
+
+    let GenerateSampleData (size:int) =
+        let mutable sample0 = Array.init size (fun _ -> 0.0)
+        let mutable sample1 = Array.init size (fun _ -> 0.0)
+
+        nd.Random.Normal(shape=new Shape(size)).ArrayData.CopyTo(sample0, 0)
+        nd.Random.Normal(shape=new Shape(size), scale=float32 0.5).ArrayData.CopyTo(sample1, 0)
+
+        Seq0 <- Array.map2 (+) sample0 sample1
+        Seq1 <- Array.map2 (-) sample0 sample1        
         Seq0, Seq1
+
+    let GenerateAndViewSampleData sampleSize =
+        sampleSize
+        |> GenerateSampleData
+        |> Chart2D
 
     let FindNearestGridNodes (axisSeq: List<float>, point:float) =
         let mutable pivot = axisSeq.Length / 2
@@ -66,4 +96,3 @@ module SampleDistribution2D =
         let GridMap2D = Array2D.init (XAxis.Length + 1) (YAxis.Length + 1) (fun x y -> 0.0)
 
         XAxis, YAxis, GridMap2D
-

@@ -10,15 +10,18 @@ namespace KernelDensityEstimation
     {
         private static void Main(string[] args)
         {
-            var watch = new System.Diagnostics.Stopwatch();
-            watch.Start();
-
             LinearBinning kde = new();
 
             SampleDistribution2D.GenerateSampleData(20000000);
-            kde.Generate2DGridFromSampleData(100);
+            kde.Generate2DGridFromSampleData(200);
             kde.CreatePointsSetFromSequences();
+
+            var watch = new System.Diagnostics.Stopwatch();
+            watch.Start();
+
             kde.DivideAndConquer();
+            SampleDistribution2D.Chart3D(kde.GridMap2D, kde.XAxisSeq, kde.YAxisSeq);
+            SampleDistribution2D.ChartContour(kde.GridMap2D);
 
             watch.Stop();
             System.Console.WriteLine($"Execution Time: {watch.ElapsedMilliseconds} ms");
@@ -47,10 +50,10 @@ namespace KernelDensityEstimation
 
                 lock (GridMap2D)
                 {
-                    GridMap2D[xLowerBoundGridIndex, yUpperBoundGridIndex] += 1;
-                    GridMap2D[xLowerBoundGridIndex, yLowerBoundGridIndex] += 1;
-                    GridMap2D[xUpperBoundGridIndex, yLowerBoundGridIndex] += 1;
-                    GridMap2D[xUpperBoundGridIndex, yUpperBoundGridIndex] += 1;
+                    GridMap2D[xLowerBoundGridIndex, yUpperBoundGridIndex] ++;
+                    GridMap2D[xLowerBoundGridIndex, yLowerBoundGridIndex] ++;
+                    GridMap2D[xUpperBoundGridIndex, yLowerBoundGridIndex] ++;
+                    GridMap2D[xUpperBoundGridIndex, yUpperBoundGridIndex] ++;
                 }
             });
         }

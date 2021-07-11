@@ -6,6 +6,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="MxNet.Runtime.Winx64.Redist" Version="1.5.0.6" />
+    <PackageReference Include="MxNet.Sharp" Version="1.5.2" />
+    <PackageReference Include="Plotly.NET" Version="2.0.0-preview.5" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\HelperFunctions\HelperFunctions.fsproj" />
   </ItemGroup>
 
