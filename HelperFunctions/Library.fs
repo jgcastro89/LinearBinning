@@ -15,6 +15,7 @@ module SampleDistribution2D =
     let mutable xCoordinate = [||]
     let mutable yCoordinate = [||]
     let mutable Points = [||]
+    let mutable Data4Chart = seq{seq{0.;}}
 
     Random.SetSampleGenerator(Random.RandThreadSafe(seed))
 
@@ -25,6 +26,13 @@ module SampleDistribution2D =
         let axisLegnth = size - 1.0
         [(arr |> Array.min) .. ((arr, axisLegnth) |> Step) .. (arr |> Array.max)]
 
+    let Convert2DGridToSeq (grid: float[,]) =
+        if (Data4Chart |> Seq.length) < grid.Length then
+            let gridAxisLegnth = int (sqrt(float grid.Length)) - 1
+            Data4Chart <- seq {for i in 0 .. gridAxisLegnth do 
+                                seq { for j in 0 .. gridAxisLegnth 
+                                    do yield grid.[i, j]} }
+
     let Chart2D (xData: seq<float>, yData: seq<float>) =
         Chart.Point(xData, yData)
         |> Chart.withTitle "Kernel Density Estimate"
@@ -32,22 +40,17 @@ module SampleDistribution2D =
         |> Chart.Show
 
     let Chart3D (grid: float[,], xAxis: List<float>, yAxis: List<float>) =
-        let gridAxisLegnth = int (sqrt(float grid.Length)) - 1
-        let data = seq {for i in 0 .. gridAxisLegnth do 
-                        seq { for j in 0 .. gridAxisLegnth 
-                            do yield grid.[i, j]} }
+        grid |> Convert2DGridToSeq
 
-        Chart.Heatmap(data, xAxis, yAxis)
+        Chart.Heatmap(Data4Chart, xAxis, yAxis)
         |> Chart.withTitle "Kernel Density Estimate"
         |> Chart.withSize(width=2600., height=1400.)
         |> Chart.Show
 
     let ChartContour (grid: float[,]) =
-        let gridAxisLegnth = int (sqrt(float grid.Length)) - 1
-        let data = seq {for i in 0 .. gridAxisLegnth do 
-                        seq { for j in 0 .. gridAxisLegnth 
-                            do yield grid.[i, j]} }
-        data 
+        grid |> Convert2DGridToSeq
+
+        Data4Chart 
         |> Chart.Contour
         |> Chart.withSize(2600., 1400.)
         |> Chart.Show
