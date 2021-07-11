@@ -12,8 +12,8 @@ type CoordinatePoint (x: float, y:float) =
 
 module SampleDistribution2D = 
     let mutable seed = 10
-    let mutable Seq0 = [||]
-    let mutable Seq1 = [||]
+    let mutable xCoordinate = [||]
+    let mutable yCoordinate = [||]
     let mutable Points = [||]
 
     Random.SetSampleGenerator(Random.RandThreadSafe(seed))
@@ -56,12 +56,12 @@ module SampleDistribution2D =
         let mutable sample0 = Array.init size (fun _ -> 0.0)
         let mutable sample1 = Array.init size (fun _ -> 0.0)
 
-        nd.Random.Normal(shape=new Shape(size)).ArrayData.CopyTo(sample0, 0)
-        nd.Random.Normal(shape=new Shape(size), scale=float32 0.5).ArrayData.CopyTo(sample1, 0)
+        nd.Random.Normal(shape=new Shape(size), loc=float32 1.0).ArrayData.CopyTo(sample0, 0)
+        nd.Random.Normal(shape=new Shape(size), scale=float32 0.25).ArrayData.CopyTo(sample1, 0)
 
-        Seq0 <- Array.map2 (+) sample0 sample1
-        Seq1 <- Array.map2 (-) sample0 sample1        
-        Seq0, Seq1
+        xCoordinate <- Array.map2 (+) sample0 sample1
+        yCoordinate <- Array.map2 (-) sample0 sample1        
+        xCoordinate, yCoordinate
 
     let GenerateAndViewSampleData sampleSize =
         sampleSize

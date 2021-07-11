@@ -29,7 +29,7 @@ namespace KernelDensityEstimation
 
         private void Generate2DGridFromSampleData(int gridSize)
         {
-            var grid = SampleDistribution2D.Create2DGrid(SampleDistribution2D.Seq0, SampleDistribution2D.Seq1, gridSize);
+            var grid = SampleDistribution2D.Create2DGrid(SampleDistribution2D.xCoordinate, SampleDistribution2D.yCoordinate, gridSize);
 
             XAxisSeq = grid.Item1;
             YAxisSeq = grid.Item2;
@@ -61,8 +61,8 @@ namespace KernelDensityEstimation
         {
             Points = new List<CoordinatePoint>();
 
-            for (int i = 0; i < SampleDistribution2D.Seq0.Length; i++)
-                Points.Add(new CoordinatePoint(SampleDistribution2D.Seq0[i], SampleDistribution2D.Seq1[i]));
+            for (int i = 0; i < SampleDistribution2D.xCoordinate.Length; i++)
+                Points.Add(new CoordinatePoint(SampleDistribution2D.xCoordinate[i], SampleDistribution2D.yCoordinate[i]));
         }
 
         private List<CoordinatePoint> Points { get; set; }
