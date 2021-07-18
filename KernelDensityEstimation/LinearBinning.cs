@@ -12,7 +12,7 @@ namespace KernelDensityEstimation
             LinearBinning kde = new();
 
             SampleDistribution2D.GenerateSampleData(50000000);
-            kde.Generate2DGridFromSampleData(200);
+            kde.Generate2DGridFromSampleData(1000);
             kde.CreatePointsSetFromSequences();
 
             var watch = new System.Diagnostics.Stopwatch();

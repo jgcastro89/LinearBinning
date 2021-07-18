@@ -78,7 +78,7 @@ module SampleDistribution2D =
             if point <= axisSeq.[pivot] then
                 upperBound <- pivot
                 pivot <- (pivot - (pivot - lowerBound) /2)
-            elif point >= axisSeq.[pivot] then
+            else //point > axisSeq.[pivot] then
                 lowerBound <- pivot
                 pivot <- (pivot + (upperBound - pivot) / 2) 
 
