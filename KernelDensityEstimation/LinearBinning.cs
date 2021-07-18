@@ -20,11 +20,12 @@ namespace KernelDensityEstimation
             watch.Start();
 
             kde.DivideAndConquer();
-            SampleDistribution2D.Chart3D(kde.GridMap2D, kde.XAxisSeq, kde.YAxisSeq);
-            SampleDistribution2D.ChartContour(kde.GridMap2D);
 
             watch.Stop();
             System.Console.WriteLine($"Execution Time: {watch.ElapsedMilliseconds} ms");
+
+            SampleDistribution2D.Chart3D(kde.GridMap2D, kde.XAxisSeq, kde.YAxisSeq);
+            SampleDistribution2D.ChartContour(kde.GridMap2D);
         }
 
         private void Generate2DGridFromSampleData(int gridSize)
@@ -67,7 +68,7 @@ namespace KernelDensityEstimation
 
         private List<CoordinatePoint> Points { get; set; }
         private double[,] GridMap2D { get; set; }
-        private FSharpList<double> XAxisSeq { get; set; }
-        private FSharpList<double> YAxisSeq { get; set; }
+        private double[] XAxisSeq { get; set; }
+        private double[] YAxisSeq { get; set; }
     }
 }

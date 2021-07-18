@@ -17,14 +17,12 @@ module SampleDistribution2D =
     let mutable Points = [||]
     let mutable Data4Chart = seq{seq{0.;}}
 
-    Random.SetSampleGenerator(Random.RandThreadSafe(seed))
-
     let Step (arr, size:float) = 
         ((arr |> Array.max) - (arr |> Array.min)) / size
 
     let LinSpace (arr, size:float) = 
         let axisLegnth = size - 1.0
-        [(arr |> Array.min) .. ((arr, axisLegnth) |> Step) .. (arr |> Array.max)]
+        [|(arr |> Array.min) .. ((arr, axisLegnth) |> Step) .. (arr |> Array.max)|]
 
     let Convert2DGridToSeq (grid: float[,]) =
         if (Data4Chart |> Seq.length) < grid.Length then
@@ -39,7 +37,7 @@ module SampleDistribution2D =
         |> Chart.withSize(width=2600., height=1400.)
         |> Chart.Show
 
-    let Chart3D (grid: float[,], xAxis: List<float>, yAxis: List<float>) =
+    let Chart3D (grid: float[,], xAxis: float[], yAxis: float[]) =
         grid |> Convert2DGridToSeq
 
         Chart.Heatmap(Data4Chart, xAxis, yAxis)
@@ -71,7 +69,7 @@ module SampleDistribution2D =
         |> GenerateSampleData
         |> Chart2D
 
-    let FindNearestGridNodes (axisSeq: List<float>, point:float) =
+    let FindNearestGridNodes (axisSeq: float[], point:float) =
         let mutable pivot = axisSeq.Length / 2
         let mutable upperBound = axisSeq.Length
         let mutable lowerBound = 0

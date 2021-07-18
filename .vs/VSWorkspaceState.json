@@ -1,7 +1,8 @@
 {
   "ExpandedNodes": [
-    ""
+    "",
+    "\\KernelDensityEstimation"
   ],
-  "SelectedNode": "\\KernelDensityEstimation.sln",
+  "SelectedNode": "\\KernelDensityEstimation\\LinearBinning.cs",
   "PreviewInSolutionExplorer": false
 }
