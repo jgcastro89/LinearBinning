@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Diagnostics;
 
 namespace KernelDensityEstimation
 {
@@ -11,17 +12,17 @@ namespace KernelDensityEstimation
         {
             LinearBinning kde = new();
 
-            SampleDistribution2D.GenerateSampleData(50000000);
+            SampleDistribution2D.GenerateSampleData((int)5e7);
             kde.Generate2DGridFromSampleData(1000);
             kde.CreatePointsSetFromSequences();
 
-            var watch = new System.Diagnostics.Stopwatch();
+            var watch = new Stopwatch();
             watch.Start();
 
             kde.DivideAndConquer();
 
             watch.Stop();
-            System.Console.WriteLine($"Execution Time: {watch.ElapsedMilliseconds} ms");
+            Console.WriteLine($"Execution Time: {watch.ElapsedMilliseconds} ms");
 
             SampleDistribution2D.Chart3D(kde.GridMap2D, kde.XAxisSeq, kde.YAxisSeq);
             SampleDistribution2D.ChartContour(kde.GridMap2D);

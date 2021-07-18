@@ -54,8 +54,8 @@ module SampleDistribution2D =
         |> Chart.Show
 
     let GenerateSampleData (size:int) =
-        let mutable sample0 = Array.init size (fun _ -> 0.0)
-        let mutable sample1 = Array.init size (fun _ -> 0.0)
+        let mutable sample0 = Array.zeroCreate size
+        let mutable sample1 = Array.zeroCreate size
 
         nd.Random.Normal(shape=new Shape(size), loc=float32 1.0).ArrayData.CopyTo(sample0, 0)
         nd.Random.Normal(shape=new Shape(size), scale=float32 0.25).ArrayData.CopyTo(sample1, 0)
