@@ -31,7 +31,7 @@ module SampleDistribution2D =
                                 seq { for j in 0 .. gridAxisLegnth 
                                     do yield grid.[i, j]} }
 
-    let Chart2D (xData: seq<float>, yData: seq<float>) =
+    let Chart2D (xData: float[], yData: float[]) =
         Chart.Point(xData, yData)
         |> Chart.withTitle "Kernel Density Estimate"
         |> Chart.withSize(width=2600., height=1400.)
